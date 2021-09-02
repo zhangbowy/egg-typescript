@@ -1,8 +1,9 @@
 'use strict';
 
-import { Controller, Context } from 'egg';
+import { Context } from 'egg';
+import BaseController from './base';
 import { formatDate } from '~/app/lib/utils';
-
+import { SelfController, Get } from './../router'
 function validate() {
   return (_target: HomeController, propertyKey: string, descriptor: PropertyDescriptor) => {
     const oldAsyncFunc = descriptor.value;
@@ -13,9 +14,13 @@ function validate() {
   };
 }
 
-export default class HomeController extends Controller {
+
+@SelfController('/home')
+export default class HomeController extends BaseController {
+  [x: string]: any;
   @validate()
-  public async index() {
+  @Get("/")
+  public async index(): Promise<void> {
     const { ctx, service } = this;
     const time = service.time.today();
     this.app.logger.info(ctx.app.model.User.getData());
@@ -47,6 +52,13 @@ export default class HomeController extends Controller {
     }
   }
 
+  /**
+   * 
+   */
+  @Get('/list')
+  public slider() {
+    this.success();
+  }
   public async error() {
     throw new Error('see the error stack!!');
   }
